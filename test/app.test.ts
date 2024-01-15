@@ -1,6 +1,6 @@
 import { createApp } from '../src/app';
 import { INMEMORY_EVENTS_SERVICE } from '../src/services/events.service';
-import { INMEMORY_PEOPLE_SERVICE } from '../src/services/persons.service';
+import { PERSONS_SERVICE } from '../src/services/persons.service';
 import {
   createGetAllPersonsListProxyEventMock,
   createPersonEntityInvalidMock,
@@ -11,7 +11,9 @@ import {
 import {
   createHttp404ErrorResponse,
   createHttpErrorResponse,
+  createHttpResponse,
 } from '../src/utils/http-response';
+import { createPersonListEntity } from '../src/entities/person-list.entity';
 
 const createTestApp = async () => {
   const internalApp = await createApp({
@@ -25,12 +27,12 @@ const createTestApp = async () => {
 test('Application created correctly', async () => {
   const app = await createApp({
     dynamoTable: 'Sample_DynamoTable',
-    snsTopic: 'Sample_SNSTopick',
+    snsTopic: 'Sample_SNSTopic',
   });
 
   expect(app).toBeDefined();
 
-  expect(app.services.has(INMEMORY_PEOPLE_SERVICE)).toBeDefined();
+  expect(app.services.has(PERSONS_SERVICE)).toBeDefined();
   expect(app.services.has(INMEMORY_EVENTS_SERVICE)).toBeDefined();
 
   expect(app.actions.has('GET /persons')).toBeDefined();
@@ -41,13 +43,9 @@ test('Application handle person creation event correctly', async () => {
   const app = await createTestApp();
   const mockedEvent = createPostPersonProxyEventMock(createPersonEntityMock());
   const actualResponse = await app.resolveEvent(mockedEvent);
+  const mockedResponse = createHttpResponse(createPersonEntityMock(), 201);
 
-  const mockedResponse = {
-    statusCode: 201,
-    body: createPersonEntityMock(),
-  };
-
-  expect(actualResponse).toContainEqual(mockedResponse);
+  expect(actualResponse).toEqual(mockedResponse);
 });
 
 test('Application handle person creation event and fails with validation errors', async () => {
@@ -58,24 +56,46 @@ test('Application handle person creation event and fails with validation errors'
   const actualResponse = await app.resolveEvent(mockedEvent);
 
   const mockedResponse = createHttpErrorResponse(
-    [new Error(''), new Error(''), new Error('')],
+    [
+      {
+        name: 'ValidationError',
+        message: 'phone is a required field',
+      } as Error,
+    ],
     400,
   );
 
-  expect(actualResponse).toContainEqual(mockedResponse);
+  expect(actualResponse).toEqual(mockedResponse);
 });
 
-test('Application handle get all person list event correctly', async () => {
+test('Application handle get all person list event correctly as empty', async () => {
   const app = await createTestApp();
   const mockedEvent = createGetAllPersonsListProxyEventMock();
   const actualResponse = await app.resolveEvent(mockedEvent);
 
-  const mockedResponse = {
-    statusCode: 201,
-    body: [createPersonEntityMock()],
-  };
+  const mockedResponse = createHttpResponse(
+    createPersonListEntity({ skip: 0, count: 0, data: [] }),
+    200,
+  );
 
-  expect(actualResponse).toContainEqual(mockedResponse);
+  expect(actualResponse).toEqual(mockedResponse);
+});
+
+test('Application handle get all person list event correctly as one record', async () => {
+  const app = await createTestApp();
+  const mockedEvent = createGetAllPersonsListProxyEventMock();
+  const actualResponse = await app.resolveEvent(mockedEvent);
+
+  const mockedResponse = createHttpResponse(
+    createPersonListEntity({
+      skip: 0,
+      count: 0,
+      data: [createPersonEntityMock()],
+    }),
+    200,
+  );
+
+  expect(actualResponse).toEqual(mockedResponse);
 });
 
 test('Application handle unknown event correctly', async () => {
@@ -86,5 +106,5 @@ test('Application handle unknown event correctly', async () => {
     `GET /unknown pathname is not found`,
   );
 
-  expect(actualResponse).toContainEqual(mockedResponse);
+  expect(actualResponse).toEqual(mockedResponse);
 });

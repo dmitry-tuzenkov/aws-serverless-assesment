@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
 import { App, AppAction, AppService } from '../app-types';
-import { INMEMORY_PEOPLE_SERVICE } from '../services/persons.service';
+import { PERSONS_SERVICE } from '../services/persons.service';
 import { PersonEntity } from '../entities/person.entity';
 import {
   createHttp500ErrorResponse,
@@ -16,7 +16,7 @@ export const getPersonAction: AppAction = ({
   services,
 }: Pick<App, 'services'>) => {
   const personsService = services.get(
-    INMEMORY_PEOPLE_SERVICE,
+    PERSONS_SERVICE,
   ) as AppService<PersonEntity>;
 
   assert(personsService, 'persons service in not defined');

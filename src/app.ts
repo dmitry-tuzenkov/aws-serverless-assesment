@@ -17,8 +17,9 @@ import {
   createInMemoryEventsService,
 } from './services/events.service';
 import {
-  INMEMORY_PEOPLE_SERVICE,
-  createInMemoryPersonsService,
+  PERSONS_SERVICE,
+  PersonEntityAppServiceRecord,
+  createPersonsService,
 } from './services/persons.service';
 import {
   AppHttpResponse,
@@ -27,16 +28,20 @@ import {
 import { getPersonAction } from './actions/get-person.action';
 
 export const createApp = async (options: AppOptions): Promise<App> => {
-  const services: Map<string, AppService<AppServiceRecord>> = new Map();
   const actions: Map<string, AppActionHandler> = new Map();
+  const services: Map<
+    string,
+    AppService<PersonEntityAppServiceRecord> | AppService<AppServiceRecord>
+  > = new Map();
+
+  const personInMemoryProvider =
+    await createMemoryProvider<PersonEntityAppServiceRecord>();
 
   // options.dynamoTable
-  // services.set(
-  //   INMEMORY_PEOPLE_SERVICE,
-  //   await createInMemoryPersonsService(
-  //     await createMemoryProvider<PersonEntity>(),
-  //   ),
-  // );
+  services.set(
+    PERSONS_SERVICE,
+    await createPersonsService(personInMemoryProvider),
+  );
 
   // options.snsTopic
   // services.set(

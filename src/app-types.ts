@@ -29,7 +29,7 @@ export interface AppServiceRecord {
 
 export interface AppDataProvider<T> {
   name: string;
-  create: (primaryKey: string, data: T) => Promise<T>;
+  create: (data: T, primaryKeyName: string) => Promise<T>;
   findAll?: () => Promise<T[]>;
 }
 

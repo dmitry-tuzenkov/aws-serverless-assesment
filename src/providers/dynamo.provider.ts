@@ -1,10 +1,10 @@
 import { AppDataProvider } from '../app-types';
 
-export const MEMORY_PROVIDER_NAME = ':memory:';
+export const DYNAMO_PROVIDER_NAME = ':aws-dynamodb-table:';
 
-export const createMemoryProvider = async <T>(): Promise<
-  AppDataProvider<T>
-> => {
+export const createDynamoProvider = async <T>(
+  tableName: string,
+): Promise<AppDataProvider<T>> => {
   const storage: Map<string, T> = new Map();
 
   const create = async (data: T, primaryKeyName = 'id'): Promise<T> => {
@@ -27,7 +27,7 @@ export const createMemoryProvider = async <T>(): Promise<
   };
 
   return {
-    name: MEMORY_PROVIDER_NAME,
+    name: DYNAMO_PROVIDER_NAME,
     create,
     findAll,
   };
