@@ -1,11 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import * as TikkieAssesment from '../lib/tikkie-assesment-stack';
+import * as ServerlessAssesment from '../lib/serverless-assesment-stack';
 
 test('SQS Queue and SNS Topic Created', () => {
   const app = new cdk.App();
   // WHEN
-  const stack = new TikkieAssesment.TikkieAssesmentStack(app, 'MyTestStack');
+  const stack = new ServerlessAssesment.ServerlessAssesmentStack(
+    app,
+    'MyTestStack',
+  );
   // THEN
 
   const template = Template.fromStack(stack);

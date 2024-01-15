@@ -7,7 +7,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
-export class TikkieAssesmentStack extends cdk.Stack {
+export class ServerlessAssesmentStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -18,8 +18,8 @@ export class TikkieAssesmentStack extends cdk.Stack {
       tableName: 'personsTable',
     });
 
-    const snsTopic = new sns.Topic(this, 'PersonsUpdateTopic', {
-      topicName: 'PersonsUpdateTopic',
+    const snsTopic = new sns.Topic(this, 'PersonsSnsTopic', {
+      topicName: 'PersonsSnsTopic',
     });
 
     const lambdaFunction = new lambda.Function(this, 'PersonsLambdaFunction', {
