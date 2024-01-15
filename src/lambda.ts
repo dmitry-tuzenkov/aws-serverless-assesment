@@ -3,7 +3,7 @@ import type {
   APIGatewayProxyResultV2,
   Context,
 } from 'aws-lambda';
-import { createApp } from './app';
+import { bootsrap, createApp } from './app';
 import { createHttp500ErrorResponse } from './utils/http-response';
 
 export async function handler(
@@ -14,10 +14,12 @@ export async function handler(
   console.log(`${event.requestContext.http.method} ${event.rawPath}`);
 
   try {
-    const app = await createApp({
+    const dependencies = await bootsrap({
       dynamoTable: String(process.env.AWS_DYNAMO_DB_TABLE_NAME),
       snsTopic: String(process.env.AWS_SNS_TOPIC_NAME),
     });
+
+    const app = await createApp(dependencies);
     const response = await app.resolveEvent(event);
 
     return response;

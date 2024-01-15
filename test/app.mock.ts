@@ -1,5 +1,32 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
+
 import { PersonEntity } from '../src/entities/person.entity';
+import { AppServicesMap } from '../src/app-types';
+import { createMemoryProvider } from '../src/providers/memory.provider';
+import {
+  PERSONS_SERVICE,
+  PersonEntityAppServiceRecord,
+  createPersonsService,
+} from '../src/services/persons.service';
+
+export const inMemoryBootstap = async (): Promise<{
+  services: AppServicesMap;
+}> => {
+  const services: AppServicesMap = new Map();
+
+  const personsInMemoryProvider =
+    await createMemoryProvider<PersonEntityAppServiceRecord>();
+  const personsService = await createPersonsService(personsInMemoryProvider);
+
+  services.set(PERSONS_SERVICE, personsService);
+
+  // services.set(
+  //   INMEMORY_EVENTS_SERVICE,
+  //   await createInMemoryEventsService<AppEventPersonCreated>(),
+  // );
+
+  return { services };
+};
 
 export const createPersonEntityMock = (): PersonEntity => ({
   firstName: 'Dmitry',

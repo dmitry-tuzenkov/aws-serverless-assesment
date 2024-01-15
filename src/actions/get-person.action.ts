@@ -19,7 +19,7 @@ export const getPersonAction: AppAction = ({
     PERSONS_SERVICE,
   ) as AppService<PersonEntity>;
 
-  assert(personsService, 'persons service in not defined');
+  assert(personsService, 'persons service is not defined');
 
   return async (event: APIGatewayProxyEventV2) => {
     try {

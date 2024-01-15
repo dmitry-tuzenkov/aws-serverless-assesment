@@ -1,39 +1,40 @@
-import { createApp } from '../src/app';
-import { INMEMORY_EVENTS_SERVICE } from '../src/services/events.service';
+import { bootsrap, createApp } from '../src/app';
+import { EVENTS_SERVICE } from '../src/services/events.service';
 import { PERSONS_SERVICE } from '../src/services/persons.service';
-import {
-  createGetAllPersonsListProxyEventMock,
-  createPersonEntityInvalidMock,
-  createPersonEntityMock,
-  createPostPersonProxyEventMock,
-  createUnknownProxyEventMock,
-} from './app.mock';
 import {
   createHttp404ErrorResponse,
   createHttpErrorResponse,
   createHttpResponse,
 } from '../src/utils/http-response';
 import { createPersonListEntity } from '../src/entities/person-list.entity';
+import {
+  createGetAllPersonsListProxyEventMock,
+  createPersonEntityInvalidMock,
+  createPersonEntityMock,
+  createPostPersonProxyEventMock,
+  createUnknownProxyEventMock,
+  inMemoryBootstap,
+} from './app.mock';
 
-const createTestApp = async () => {
-  const internalApp = await createApp({
-    dynamoTable: 'Sample_DynamoTable',
-    snsTopic: 'Sample_SNSTopic',
-  });
+export const createTestApp = async () => {
+  const dependencies = await inMemoryBootstap();
+  const internalApp = await createApp(dependencies);
 
   return internalApp;
 };
 
 test('Application created correctly', async () => {
-  const app = await createApp({
+  const dependencies = await bootsrap({
     dynamoTable: 'Sample_DynamoTable',
     snsTopic: 'Sample_SNSTopic',
   });
 
+  const app = await createApp(dependencies);
+
   expect(app).toBeDefined();
 
   expect(app.services.has(PERSONS_SERVICE)).toBeDefined();
-  expect(app.services.has(INMEMORY_EVENTS_SERVICE)).toBeDefined();
+  expect(app.services.has(EVENTS_SERVICE)).toBeDefined();
 
   expect(app.actions.has('GET /persons')).toBeDefined();
   expect(app.actions.has('POST /persons')).toBeDefined();

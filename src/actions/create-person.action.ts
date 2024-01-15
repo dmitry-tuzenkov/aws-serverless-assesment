@@ -6,7 +6,7 @@ import {
   PERSONS_SERVICE,
   PersonEntityAppServiceRecord,
 } from '../services/persons.service';
-import { INMEMORY_EVENTS_SERVICE } from '../services/events.service';
+import { EVENTS_SERVICE } from '../services/events.service';
 import {
   PersonEntity,
   createAndValidatePersonEntityData,

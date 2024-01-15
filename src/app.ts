@@ -1,20 +1,10 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { createPeopleAction } from './actions/create-person.action';
+import { App, AppActionHandler, AppOptions, AppServicesMap } from './app-types';
 import {
-  App,
-  AppAction,
-  AppActionHandler,
-  AppEvent,
-  AppOptions,
-  AppService,
-  AppServiceRecord,
-} from './app-types';
-import { AppEventPersonCreated } from './entities/person-event.entity';
-import { PersonEntity } from './entities/person.entity';
-import { createMemoryProvider } from './providers/memory.provider';
-import {
-  INMEMORY_EVENTS_SERVICE,
-  createInMemoryEventsService,
+  EVENTS_SERVICE,
+  PersonEventEntityAppServiceRecord,
+  createEventsService,
 } from './services/events.service';
 import {
   PERSONS_SERVICE,
@@ -26,45 +16,60 @@ import {
   createHttp404ErrorResponse,
 } from './utils/http-response';
 import { getPersonAction } from './actions/get-person.action';
+import { createDynamoProvider } from './providers/dynamo.provider';
+import { createSNSProvider } from './providers/sns.provider';
 
-export const createApp = async (options: AppOptions): Promise<App> => {
-  const actions: Map<string, AppActionHandler> = new Map();
-  const services: Map<
-    string,
-    AppService<PersonEntityAppServiceRecord> | AppService<AppServiceRecord>
-  > = new Map();
-
-  const personInMemoryProvider =
-    await createMemoryProvider<PersonEntityAppServiceRecord>();
-
-  // options.dynamoTable
-  services.set(
-    PERSONS_SERVICE,
-    await createPersonsService(personInMemoryProvider),
-  );
-
-  // options.snsTopic
-  // services.set(
-  //   INMEMORY_EVENTS_SERVICE,
-  //   await createInMemoryEventsService<AppEventPersonCreated>(),
-  // );
-
-  actions.set('GET /persons', getPersonAction({ services }));
-  actions.set('POST /persons', createPeopleAction({ services }));
-
-  const resolveEvent = async (
-    event: APIGatewayProxyEventV2,
-  ): Promise<AppHttpResponse> => {
+const createAppEventResolver =
+  ({ actions }: Pick<App, 'actions'>) =>
+  async (event: APIGatewayProxyEventV2): Promise<AppHttpResponse> => {
     const httpAction = `${event.requestContext.http.method} ${event.rawPath}`;
 
     const action = actions.get(httpAction);
 
     if (action) {
-      return action(event);
+      return await action(event);
     }
 
     return createHttp404ErrorResponse(`${httpAction} pathname is not found`);
   };
+
+export const bootsrap = async (
+  options: AppOptions,
+): Promise<{ services: AppServicesMap }> => {
+  const services: AppServicesMap = new Map();
+
+  const personDynamoProvider =
+    await createDynamoProvider<PersonEntityAppServiceRecord>(
+      options.dynamoTable,
+    );
+
+  const dynamoPersonsService = await createPersonsService(personDynamoProvider);
+  services.set(PERSONS_SERVICE, dynamoPersonsService);
+
+  const eventNotificationProvider =
+    await createSNSProvider<PersonEventEntityAppServiceRecord>(
+      options.snsTopic,
+    );
+
+  const eventsNotificationService = await createEventsService(
+    eventNotificationProvider,
+  );
+
+  services.set(EVENTS_SERVICE, eventsNotificationService);
+
+  return { services };
+};
+
+export const createApp = async (dependencies: {
+  services: AppServicesMap;
+}): Promise<App> => {
+  const { services } = dependencies;
+  const actions: Map<string, AppActionHandler> = new Map();
+
+  actions.set('POST /persons', createPeopleAction({ services }));
+  actions.set('GET /persons', getPersonAction({ services }));
+
+  const resolveEvent = createAppEventResolver({ actions });
 
   return { services, actions, resolveEvent };
 };

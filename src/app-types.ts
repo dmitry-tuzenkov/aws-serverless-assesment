@@ -1,5 +1,7 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { AppHttpResponse } from './utils/http-response';
+import { PersonEntityAppServiceRecord } from './services/persons.service';
+import { PersonEventEntityAppServiceRecord } from './services/events.service';
 
 export enum APP_EVENT {
   PERSON_CREATED = 'person-created',
@@ -38,6 +40,12 @@ export type AppActionHandler = (
 ) => Promise<AppHttpResponse>;
 
 export type AppAction = (options: Pick<App, 'services'>) => AppActionHandler;
+
+export type AppServicesMap = Map<
+  string,
+  | AppService<PersonEntityAppServiceRecord>
+  | AppService<PersonEventEntityAppServiceRecord>
+>;
 
 export interface App {
   services: Map<string, AppService<any>>;

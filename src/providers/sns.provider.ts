@@ -1,14 +1,14 @@
 import assert from 'assert';
 import { AppDataProvider } from '../app-types';
 
-export const DYNAMO_PROVIDER_NAME = ':aws-dynamodb-table:';
+export const SNS_PROVIDER_NAME = ':aws-sns:';
 
-export const createDynamoProvider = async <T>(
-  tableName: string,
+export const createSNSProvider = async <T>(
+  topicName: string,
 ): Promise<AppDataProvider<T>> => {
   const storage: Map<string, T> = new Map();
 
-  assert(tableName, 'dynamo db provider table name is not defined');
+  assert(topicName, 'sns topic provider name is not defined');
 
   const create = async (data: T, primaryKeyName = 'id'): Promise<T> => {
     const dataObject = Object(data);
@@ -30,7 +30,7 @@ export const createDynamoProvider = async <T>(
   };
 
   return {
-    name: DYNAMO_PROVIDER_NAME,
+    name: SNS_PROVIDER_NAME,
     create,
     findAll,
   };
