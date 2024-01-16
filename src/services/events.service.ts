@@ -4,7 +4,6 @@ import {
   AppService,
   AppServiceRecord,
 } from '../app-types';
-import { AppEventPersonCreated } from '../entities/person-event.entity';
 import { PersonEntity } from '../entities/person.entity';
 export interface PersonEventEntityAppServiceRecord
   extends AppEvent<PersonEntity>,

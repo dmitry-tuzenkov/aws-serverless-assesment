@@ -8,7 +8,6 @@ import {
 } from './services/events.service';
 import {
   PERSONS_SERVICE,
-  PersonEntityAppServiceRecord,
   createPersonsService,
 } from './services/persons.service';
 import {

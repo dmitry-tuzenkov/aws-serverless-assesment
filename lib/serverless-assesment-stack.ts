@@ -1,8 +1,7 @@
-import path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
@@ -34,13 +33,13 @@ export class ServerlessAssesmentStack extends cdk.Stack {
       topicName: 'persons-sns-topic',
     });
 
-    const lambdaFunction = new lambda.Function(
+    const lambdaFunction = new lambda.NodejsFunction(
       this,
       `${envName}-persons-lambda`,
       {
-        runtime: lambda.Runtime.NODEJS_20_X,
+        entry: './src/lambda.ts',
         handler: 'lambda.handler',
-        code: lambda.Code.fromAsset(path.resolve(__dirname, '../dist/src/')),
+
         environment: {
           DYNAMO_TABLE_NAME: personsTable.tableName,
           SNS_TOPIC_ARN: snsTopic.topicArn,

@@ -1,0 +1,1 @@
+{"version":3,"file":"create-person.dto.js","sourceRoot":"","sources":["../../../src/dto/create-person.dto.ts"],"names":[],"mappings":";;;AAAA,6DAGmC;AAI5B,MAAM,qBAAqB,GAAG,KAAK,EACxC,IAAkB,EACc,EAAE;IAClC,MAAM,YAAY,GAAG,MAAM,IAAA,iDAAiC,EAAC,IAAI,CAAC,CAAC;IACnE,OAAO,YAAY,CAAC;AACtB,CAAC,CAAC;AALW,QAAA,qBAAqB,yBAKhC"}
