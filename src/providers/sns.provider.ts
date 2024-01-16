@@ -1,37 +1,30 @@
 import assert from 'assert';
+import * as sns from '@aws-sdk/client-sns';
 import { AppDataProvider } from '../app-types';
 
 export const SNS_PROVIDER_NAME = ':aws-sns:';
 
 export const createSNSProvider = async <T>(
-  topicName: string,
+  topicArn: string,
+  region = 'eu-central-1',
 ): Promise<AppDataProvider<T>> => {
-  const storage: Map<string, T> = new Map();
+  const snsClient = new sns.SNSClient({ region });
 
-  assert(topicName, 'sns topic provider name is not defined');
+  assert(topicArn, 'sns topic provider arn is not defined');
 
-  const create = async (data: T, primaryKeyName = 'id'): Promise<T> => {
-    const dataObject = Object(data);
-    const pkey =
-      dataObject.hasOwnProperty(primaryKeyName) && dataObject[primaryKeyName];
+  const create = async (data: T): Promise<T> => {
+    await snsClient.send(
+      new sns.PublishCommand({
+        TopicArn: topicArn,
+        Message: JSON.stringify(data),
+      }),
+    );
 
-    if (pkey) {
-      throw new Error(
-        `Primary key value for '${primaryKeyName}' is not present in the record`,
-      );
-    }
-
-    storage.set(pkey, data);
     return data;
-  };
-
-  const findAll = async (): Promise<T[]> => {
-    return Array.from(storage.values());
   };
 
   return {
     name: SNS_PROVIDER_NAME,
     create,
-    findAll,
   };
 };

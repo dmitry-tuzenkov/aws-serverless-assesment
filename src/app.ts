@@ -16,7 +16,7 @@ import {
   createHttp404ErrorResponse,
 } from './utils/http-response';
 import { getPersonAction } from './actions/get-person.action';
-import { createDynamoProvider } from './providers/dynamo.provider';
+import { createPersonsDynamoProvider } from './providers/persons-dynamo.provider';
 import { createSNSProvider } from './providers/sns.provider';
 
 const createAppEventResolver =
@@ -38,17 +38,18 @@ export const bootsrap = async (
 ): Promise<{ services: AppServicesMap }> => {
   const services: AppServicesMap = new Map();
 
-  const personDynamoProvider =
-    await createDynamoProvider<PersonEntityAppServiceRecord>(
-      options.dynamoTable,
-    );
+  const personDynamoProvider = await createPersonsDynamoProvider(
+    options.dynamoTable,
+    options.region,
+  );
 
   const dynamoPersonsService = await createPersonsService(personDynamoProvider);
   services.set(PERSONS_SERVICE, dynamoPersonsService);
 
   const eventNotificationProvider =
     await createSNSProvider<PersonEventEntityAppServiceRecord>(
-      options.snsTopic,
+      options.snsTopicArn,
+      options.region,
     );
 
   const eventsNotificationService = await createEventsService(

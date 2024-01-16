@@ -15,8 +15,9 @@ export async function handler(
 
   try {
     const dependencies = await bootsrap({
-      dynamoTable: String(process.env.AWS_DYNAMO_DB_TABLE_NAME),
-      snsTopic: String(process.env.AWS_SNS_TOPIC_NAME),
+      region: String(process.env.AWS_REGION), // will be added automatically to aws lambda envs
+      dynamoTable: String(process.env.DYNAMO_TABLE_NAME),
+      snsTopicArn: String(process.env.SNS_TOPIC_ARN),
     });
 
     const app = await createApp(dependencies);

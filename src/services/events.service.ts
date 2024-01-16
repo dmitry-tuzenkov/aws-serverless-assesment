@@ -16,7 +16,7 @@ export const createEventsService = async (
   dataProvider: AppDataProvider<PersonEventEntityAppServiceRecord>,
 ): Promise<AppService<PersonEventEntityAppServiceRecord>> => {
   const create = async (data: PersonEventEntityAppServiceRecord) => {
-    const record = await dataProvider.create(data, 'id');
+    const record = await dataProvider.create(data, '');
     return record;
   };
 

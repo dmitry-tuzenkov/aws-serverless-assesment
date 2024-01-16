@@ -15,8 +15,9 @@ export interface AppEvent<T> {
 }
 
 export interface AppOptions {
+  region: string;
   dynamoTable: string;
-  snsTopic: string;
+  snsTopicArn: string;
 }
 
 export interface AppService<T> {

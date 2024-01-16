@@ -25,8 +25,9 @@ export const createTestApp = async () => {
 
 test('Application created correctly', async () => {
   const dependencies = await bootsrap({
-    dynamoTable: 'Sample_DynamoTable',
-    snsTopic: 'Sample_SNSTopic',
+    dynamoTable: 'personsTable',
+    snsTopicArn: 'personsTopicARN',
+    region: 'eu-central-eu',
   });
 
   const app = await createApp(dependencies);

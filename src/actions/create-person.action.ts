@@ -1,16 +1,14 @@
 import assert from 'node:assert/strict';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import uuid from 'uuid';
 
-import { App, AppAction, AppService, AppServiceRecord } from '../app-types';
+import { App, AppAction, AppService } from '../app-types';
 import {
   PERSONS_SERVICE,
   PersonEntityAppServiceRecord,
 } from '../services/persons.service';
 import { EVENTS_SERVICE } from '../services/events.service';
-import {
-  PersonEntity,
-  createAndValidatePersonEntityData,
-} from '../entities/person.entity';
+import { PersonEntity } from '../entities/person.entity';
 import {
   createHttp500ErrorResponse,
   createHttpErrorResponse,
@@ -29,12 +27,12 @@ export const createPeopleAction: AppAction = ({
   const personsService = services.get(
     PERSONS_SERVICE,
   ) as AppService<PersonEntityAppServiceRecord>;
-  // const updatesService = services.get(
-  //   INMEMORY_EVENTS_SERVICE,
-  // ) as AppService<AppEventPersonCreated>;
+  const eventUpdatesService = services.get(
+    EVENTS_SERVICE,
+  ) as AppService<AppEventPersonCreated>;
 
   assert(personsService, 'persons service in not defined');
-  // assert(updatesService, 'events publisher service in not defined');
+  assert(eventUpdatesService, 'events publisher service in not defined');
 
   return async (event: APIGatewayProxyEventV2) => {
     try {
@@ -42,8 +40,13 @@ export const createPeopleAction: AppAction = ({
         bodyJsonParser<PersonEntity>(String(event.body)),
       );
 
-      const data = await personsService.create(payload);
-      // await updatesService.create(createPersonCreatedEvent(payload));
+      const data = await personsService.create({
+        ...payload,
+        id: uuid.v4(),
+        createdAt: new Date().toISOString(),
+      });
+
+      await eventUpdatesService.create(createPersonCreatedEvent(payload));
 
       return createHttpResponse(data, 201);
     } catch (ex: unknown) {

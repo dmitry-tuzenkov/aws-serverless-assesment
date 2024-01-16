@@ -8,6 +8,11 @@ import {
   PersonEntityAppServiceRecord,
   createPersonsService,
 } from '../src/services/persons.service';
+import {
+  EVENTS_SERVICE,
+  PersonEventEntityAppServiceRecord,
+  createEventsService,
+} from '../src/services/events.service';
 
 export const inMemoryBootstap = async (): Promise<{
   services: AppServicesMap;
@@ -20,11 +25,14 @@ export const inMemoryBootstap = async (): Promise<{
 
   services.set(PERSONS_SERVICE, personsService);
 
-  // services.set(
-  //   INMEMORY_EVENTS_SERVICE,
-  //   await createInMemoryEventsService<AppEventPersonCreated>(),
-  // );
+  const eventNotificationProvider =
+    await createMemoryProvider<PersonEventEntityAppServiceRecord>();
 
+  const eventsNotificationService = await createEventsService(
+    eventNotificationProvider,
+  );
+
+  services.set(EVENTS_SERVICE, eventsNotificationService);
   return { services };
 };
 
