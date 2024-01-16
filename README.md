@@ -14,8 +14,6 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 - `cdk diff` compare deployed stack with current state
 - `cdk synth` emits the synthesized CloudFormation template
 
-
-
 ## Class and Infra Diagrams
 
-![serverless-assesment-drawio](/Users/dmitryt/Downloads/serverless-assesment-drawio.png)
+![serverless-assesment-drawio](./serverless-assesment-drawio.png)
