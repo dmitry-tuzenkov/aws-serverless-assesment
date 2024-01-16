@@ -48,8 +48,16 @@ export class ServerlessAssesmentStack extends cdk.Stack {
     personsTable.grantReadWriteData(lambdaFunction);
 
     snsTopic.addSubscription(new subs.LambdaSubscription(lambdaFunction));
+    snsTopic.grantPublish(lambdaFunction);
 
-    const api = new apigateway.RestApi(this, `${envName}-persons-api-gw`);
+    const api = new apigateway.LambdaRestApi(
+      this,
+      `${envName}-persons-lambda-rest-api`,
+      {
+        handler: lambdaFunction,
+        proxy: false,
+      },
+    );
     const personsResource = api.root.addResource('persons');
 
     const lambdaIntegration = new apigateway.LambdaIntegration(lambdaFunction);

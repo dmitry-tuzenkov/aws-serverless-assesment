@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { AppHttpResponse } from './utils/http-response';
 import { PersonEntityAppServiceRecord } from './services/persons.service';
 import { PersonEventEntityAppServiceRecord } from './services/events.service';
@@ -37,7 +37,7 @@ export interface AppDataProvider<T> {
 }
 
 export type AppActionHandler = (
-  event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEvent,
 ) => Promise<AppHttpResponse>;
 
 export type AppAction = (options: Pick<App, 'services'>) => AppActionHandler;
@@ -52,5 +52,5 @@ export interface App {
   services: Map<string, AppService<any>>;
   actions: Map<string, AppActionHandler>;
 
-  resolveEvent: (event: APIGatewayProxyEventV2) => Promise<AppHttpResponse>;
+  resolveEvent: (event: APIGatewayProxyEvent) => Promise<AppHttpResponse>;
 }

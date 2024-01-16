@@ -6,7 +6,7 @@
   },
   "scripts": {
     "debug": "ts-node ./src/debug",
-    "build": "tsc",
+    "build": "rm -rf ./dist && tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",

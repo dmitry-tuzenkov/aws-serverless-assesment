@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 import { PersonEntity } from '../src/entities/person.entity';
 import { AppServicesMap } from '../src/app-types';
@@ -13,6 +13,7 @@ import {
   PersonEventEntityAppServiceRecord,
   createEventsService,
 } from '../src/services/events.service';
+import { createProxyEvent } from './proxy-event';
 
 export const inMemoryBootstap = async (): Promise<{
   services: AppServicesMap;
@@ -58,42 +59,31 @@ export const createPersonEntityInvalidMock = (): PersonEntity => ({
 
 export const createPostPersonProxyEventMock = (
   data: object,
-): APIGatewayProxyEventV2 => {
+): APIGatewayProxyEvent => {
+  const proxyEvent = createProxyEvent();
   return {
-    requestContext: {
-      http: {
-        method: 'POST',
-      },
-    },
-    rawPath: '/persons',
-    rawQueryString: '',
+    ...proxyEvent,
+    httpMethod: 'POST',
+    path: '/persons',
     body: JSON.stringify(data),
-  } as APIGatewayProxyEventV2;
+  } as APIGatewayProxyEvent;
 };
 
 export const createGetAllPersonsListProxyEventMock =
-  (): APIGatewayProxyEventV2 => {
+  (): APIGatewayProxyEvent => {
+    const proxyEvent = createProxyEvent();
     return {
-      requestContext: {
-        http: {
-          method: 'GET',
-        },
-      },
-      rawPath: '/persons',
-      rawQueryString: '',
-      body: '',
-    } as APIGatewayProxyEventV2;
+      ...proxyEvent,
+      httpMethod: 'GET',
+      path: '/persons',
+    } as APIGatewayProxyEvent;
   };
 
-export const createUnknownProxyEventMock = (): APIGatewayProxyEventV2 => {
+export const createUnknownProxyEventMock = (): APIGatewayProxyEvent => {
+  const proxyEvent = createProxyEvent();
   return {
-    requestContext: {
-      http: {
-        method: 'GET',
-      },
-    },
-    rawPath: '/unknown',
-    rawQueryString: '',
-    body: '',
-  } as APIGatewayProxyEventV2;
+    ...proxyEvent,
+    httpMethod: 'GET',
+    path: '/unknown',
+  } as APIGatewayProxyEvent;
 };

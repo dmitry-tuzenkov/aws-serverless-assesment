@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
 
 import { App, AppAction, AppService } from '../app-types';
@@ -34,7 +34,7 @@ export const createPeopleAction: AppAction = ({
   assert(personsService, 'persons service in not defined');
   assert(eventUpdatesService, 'events publisher service in not defined');
 
-  return async (event: APIGatewayProxyEventV2) => {
+  return async (event: APIGatewayProxyEvent) => {
     try {
       const payload = await createPersonEntityDto(
         bodyJsonParser<PersonEntity>(String(event.body)),

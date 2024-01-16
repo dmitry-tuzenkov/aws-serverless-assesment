@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 import { App, AppAction, AppService } from '../app-types';
 import { PERSONS_SERVICE } from '../services/persons.service';
@@ -21,7 +21,7 @@ export const getPersonAction: AppAction = ({
 
   assert(personsService, 'persons service is not defined');
 
-  return async (event: APIGatewayProxyEventV2) => {
+  return async (event: APIGatewayProxyEvent) => {
     try {
       const records = await personsService.findAll();
       const listEntity = createPersonListEntity({

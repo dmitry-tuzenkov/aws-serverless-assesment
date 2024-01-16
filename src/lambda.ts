@@ -1,5 +1,5 @@
 import type {
-  APIGatewayProxyEventV2,
+  APIGatewayProxyEvent,
   APIGatewayProxyResultV2,
   Context,
 } from 'aws-lambda';
@@ -7,11 +7,12 @@ import { bootsrap, createApp } from './app';
 import { createHttp500ErrorResponse } from './utils/http-response';
 
 export async function handler(
-  event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEvent,
   context: Context,
 ): Promise<APIGatewayProxyResultV2> {
   console.log(context.functionName);
-  console.log(`${event.requestContext.http.method} ${event.rawPath}`);
+  console.log(JSON.stringify(event));
+  console.log(`${event.httpMethod} ${event.path}`);
 
   try {
     const dependencies = await bootsrap({

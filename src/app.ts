@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { createPeopleAction } from './actions/create-person.action';
 import { App, AppActionHandler, AppOptions, AppServicesMap } from './app-types';
 import {
@@ -20,8 +20,8 @@ import { createSNSProvider } from './providers/sns.provider';
 
 const createAppEventResolver =
   ({ actions }: Pick<App, 'actions'>) =>
-  async (event: APIGatewayProxyEventV2): Promise<AppHttpResponse> => {
-    const httpAction = `${event.requestContext.http.method} ${event.rawPath}`;
+  async (event: APIGatewayProxyEvent): Promise<AppHttpResponse> => {
+    const httpAction = `${event.httpMethod} ${event.path}`;
 
     const action = actions.get(httpAction);
 

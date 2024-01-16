@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import type { APIGatewayProxyEventV2 } from 'aws-lambda';
+import type { APIGatewayProxyEvent } from 'aws-lambda';
 import { bootsrap, createApp } from './app';
 import {
   AppHttpResponse,
@@ -13,9 +13,8 @@ import {
 } from '../test/app.mock';
 import { AppOptions } from './app-types';
 
-async function main(event: APIGatewayProxyEventV2): Promise<AppHttpResponse> {
-  console.log(`${event.requestContext.http.method} ${event.rawPath}`);
-  console.log(`${event.requestContext.http.method} ${event.rawPath}`);
+async function main(event: APIGatewayProxyEvent): Promise<AppHttpResponse> {
+  console.log(`${event.httpMethod} ${event.path}`);
 
   try {
     const options: AppOptions = {
