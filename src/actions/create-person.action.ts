@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import { App, AppAction, AppService } from '../app-types';
 import {
@@ -42,7 +42,7 @@ export const createPeopleAction: AppAction = ({
 
       const data = await personsService.create({
         ...payload,
-        id: uuid.v4(),
+        id: uuidv4(),
         createdAt: new Date().toISOString(),
       });
 

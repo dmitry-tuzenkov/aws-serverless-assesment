@@ -13,12 +13,14 @@ export const createSNSProvider = async <T>(
   assert(topicArn, 'sns topic provider arn is not defined');
 
   const create = async (data: T): Promise<T> => {
-    await snsClient.send(
+    const response = await snsClient.send(
       new sns.PublishCommand({
         TopicArn: topicArn,
         Message: JSON.stringify(data),
       }),
     );
+
+    console.debug('Event has been sent', response);
 
     return data;
   };

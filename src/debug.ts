@@ -7,6 +7,7 @@ import {
   createHttp500ErrorResponse,
 } from './utils/http-response';
 import {
+  createGetAllPersonsListProxyEventMock,
   createPersonEntityMock,
   createPostPersonProxyEventMock,
 } from '../test/app.mock';
@@ -37,6 +38,7 @@ async function main(event: APIGatewayProxyEventV2): Promise<AppHttpResponse> {
   }
 }
 
-main(createPostPersonProxyEventMock(createPersonEntityMock())).then(
-  (response: AppHttpResponse) => console.log('Got Resonse', response),
-);
+main(createPostPersonProxyEventMock(createPersonEntityMock()))
+  .then((response: AppHttpResponse) => console.debug('Got Resonse', response))
+  .then(() => main(createGetAllPersonsListProxyEventMock()))
+  .then((response: AppHttpResponse) => console.debug('Got Resonse', response));

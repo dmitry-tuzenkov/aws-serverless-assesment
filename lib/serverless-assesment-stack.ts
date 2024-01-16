@@ -38,8 +38,6 @@ export class ServerlessAssesmentStack extends cdk.Stack {
       `${envName}-persons-lambda`,
       {
         entry: './src/lambda.ts',
-        handler: 'lambda.handler',
-
         environment: {
           DYNAMO_TABLE_NAME: personsTable.tableName,
           SNS_TOPIC_ARN: snsTopic.topicArn,

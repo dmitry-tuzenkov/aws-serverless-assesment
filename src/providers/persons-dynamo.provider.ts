@@ -22,6 +22,7 @@ export const createPersonsDynamoProvider = async (
         TableName: tableName,
         Item: {
           personId: { S: String(data.id) },
+          createdAt: { S: String(data.createdAt) },
           firstName: { S: data.firstName },
           lastName: { S: data.lastName },
           phone: { S: data.phone },
@@ -37,9 +38,10 @@ export const createPersonsDynamoProvider = async (
         },
       });
       await client.send(command);
-      console.log('Successfully created person record.');
+      console.debug('DynamoDbPersonsCreated');
     } catch (error) {
       console.error('Error creating person record:', error);
+      throw new Error('Failed to create a person');
     }
 
     return data;
@@ -53,30 +55,33 @@ export const createPersonsDynamoProvider = async (
       });
 
       const result = await client.send(command);
+      console.debug('DynamoDbPersonsResult', JSON.stringify(result));
 
-      if (!result.Items?.length) {
+      if (!result.Count) {
         return [];
       }
 
-      // const persons = result.Items.map<PersonEntityAppServiceRecord>((item) => {
-      //   return {
-      //     id: item.personId.S,
-      //     firstName: item.firstName.S,
-      //     lastName: item.lastName.S,
-      //     phone: item.phone.S,
-      //     // address: {
-      //     //   street: item.address.M.street.S,
-      //     //   houseNumber: item.address.M.houseNumber.S,
-      //     //   postCode: item.address.M.postCode.S,
-      //     //   city: item.address.M.city.S,
-      //     //   country: item.address.M.country.S,
-      //     // },
-      //   };
-      // });
+      const persons = result.Items?.map((item) => {
+        return {
+          id: item?.personId.S,
+          firstName: item?.firstName.S,
+          lastName: item?.lastName.S,
+          phone: item?.phone.S,
+          address: {
+            street: item?.address?.M?.street.S,
+            houseNumber: item?.address?.M?.houseNumber.S,
+            postCode: item?.address?.M?.postCode.S,
+            city: item?.address?.M?.city.S,
+            country: item?.address?.M?.country.S,
+          },
+          createdAt: item?.createdAt.S,
+        };
+      });
 
-      // return persons;
+      return persons as PersonEntityAppServiceRecord[];
     } catch (error) {
       console.error('Error creating person record:', error);
+      throw new Error('Failed to retreive a person');
     }
 
     return [];
