@@ -6,5 +6,4 @@ There are multiple technologies available to build such an application. We use a
 The service you’re going to build is the Person Service. The person service stores information about persons and allows users of its API to create new persons and list existing persons.
 The microservice should expose a Rest API endpoint POST /persons to create a new person. A person has first name, last name, phone number and address information. This information should be stored in a database, preferably NoSQL. After successfully storing this information, a Person Created event should be published to fan out to other subscribed microservices.
 
-The microservice should be easily deployable to different environments and we expect that you use a serverless approach to ensure the microservice can scale on its own based on usage without having to manage infrastructure. Please share your (private) repository at least a day before the assessment with us containing the code (and anything else) you would like to discuss.
-We look forward to seeing your solution and discussing it!
+The microservice should be easily deployable to different environments and we expect that you use a serverless approach to ensure the microservice can scale on its own based on usage without having to manage infrastructure.
